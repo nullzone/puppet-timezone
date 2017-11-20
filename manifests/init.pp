@@ -83,9 +83,22 @@ class timezone(
       }
     }
     'Debian' : {
-      $debian_command = $::operatingsystemmajrelease ? {
-        /16.04/ => "timedatectl set-timezone ${timezone}",
-        default => 'dpkg-reconfigure -f noninteractive tzdata',
+      case $::operatingsystem {
+        'Debian' : {
+          $debian_command = $::operatingsystemmajrelease ? {
+            /9/ => "timedatectl set-timezone ${timezone}",
+            default => 'dpkg-reconfigure -f noninteractive tzdata',
+          }
+        }
+        'Ubuntu' : {
+          $debian_command = $::operatingsystemmajrelease ? {
+            /16.04/ => "timedatectl set-timezone ${timezone}",
+            default => 'dpkg-reconfigure -f noninteractive tzdata',
+          }
+        }
+        default : {
+          $debian_command = 'dpkg-reconfigure -f noninteractive tzdata'
+        }
       }
     }
   }
